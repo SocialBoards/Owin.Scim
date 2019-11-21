@@ -30,7 +30,7 @@
             if (actionContext.Request.Method == HttpMethod.Get)
                 queryOptions = actionContext.Request.GetOwinContext().Request.Query.GetScimQueryOptions(_ServerConfiguration);
             else if (actionContext.Request.Method == HttpMethod.Post)
-                queryOptions = await actionContext.Request.Content.ReadAsAsync<ScimQueryOptions>(cancellationToken);
+                queryOptions = await actionContext.Request.Content.ReadAsAsync<ScimQueryOptions>(cancellationToken).ConfigureAwait(false);
             else
                 throw new InvalidOperationException("You can only bind ScimQueryOptions on GET or POST query endpoints.");
 

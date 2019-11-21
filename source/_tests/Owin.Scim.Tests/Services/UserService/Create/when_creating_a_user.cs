@@ -1,4 +1,7 @@
-﻿namespace Owin.Scim.Tests.Services.UserService.Create
+﻿using System.Security.Permissions;
+using System.Security.Principal;
+
+namespace Owin.Scim.Tests.Services.UserService.Create
 {
     using System;
     using System.Threading.Tasks;
@@ -28,11 +31,12 @@
             UserRepository = A.Fake<IUserRepository>();
             GroupRepository = A.Fake<IGroupRepository>();
             PasswordManager = A.Fake<IManagePasswords>();
+            Principal  = A.Fake<IPrincipal>();
 
-            A.CallTo(() => UserRepository.IsUserNameAvailable(A<string>._))
+            A.CallTo(() => UserRepository.IsUserNameAvailable(A<IPrincipal>._, A<string>._))
                 .Returns(true);
             
-            A.CallTo(() => UserRepository.CreateUser(A<ScimUser>._))
+            A.CallTo(() => UserRepository.CreateUser(A<IPrincipal>._, A<ScimUser>._))
                 .ReturnsLazily(c =>
                 {
                     var user = (ScimUser) c.Arguments[0];
@@ -53,7 +57,9 @@
                 PasswordManager);
         };
 
-        Because of = async () => Result = await _UserService.CreateUser(ClientUserDto).AwaitResponse().AsTask;
+        public static IPrincipal Principal { get; set; }
+
+        Because of = async () => Result = await _UserService.CreateUser(A<IPrincipal>._, ClientUserDto).AwaitResponse().AsTask;
 
         protected static ScimUser ClientUserDto;
 

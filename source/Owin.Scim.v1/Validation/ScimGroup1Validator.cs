@@ -1,4 +1,6 @@
-﻿namespace Owin.Scim.v1.Validation
+﻿using System.Security.Principal;
+
+namespace Owin.Scim.v1.Validation
 {
     using System;
     using System.Linq;

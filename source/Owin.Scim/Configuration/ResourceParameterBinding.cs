@@ -45,7 +45,7 @@
             HttpActionContext actionContext,
             CancellationToken cancellationToken)
         {
-            var jsonString = await actionContext.Request.Content.ReadAsStringAsync();
+            var jsonString = await actionContext.Request.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var jsonData = JObject.Parse(jsonString);
             var schemasKey = jsonData.FindKeyCaseInsensitive(ScimConstants.Schemas.Key);

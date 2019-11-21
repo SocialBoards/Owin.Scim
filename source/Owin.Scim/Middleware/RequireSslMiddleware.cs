@@ -32,12 +32,12 @@
                 await context.Response.WriteAsync(
                     Encoding.UTF8.GetBytes(
                         JsonConvert.SerializeObject(
-                            new ScimError(HttpStatusCode.Forbidden))));
+                            new ScimError(HttpStatusCode.Forbidden)))).ConfigureAwait(false);
 
                 return;
             }
 
-            await _Next(env);
+            await _Next(env).ConfigureAwait(false);
         }
     }
 }

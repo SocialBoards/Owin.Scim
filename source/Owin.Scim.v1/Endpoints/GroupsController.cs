@@ -37,7 +37,7 @@
         [Route(Name = "CreateGroup")]
         public async Task<HttpResponseMessage> Post(ScimGroup1 groupDto)
         {
-            return (await _GroupService.CreateGroup(groupDto))
+            return (await _GroupService.CreateGroup(User, groupDto))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id }))
                 .ToHttpResponseMessage(Request, (group, response) =>
                 {
@@ -51,7 +51,7 @@
         [Route("{groupId}", Name = RetrieveGroupRouteName)]
         public async Task<HttpResponseMessage> Get(string groupId)
         {
-            return (await _GroupService.RetrieveGroup(groupId))
+            return (await _GroupService.RetrieveGroup(User, groupId))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id }))
                 .Let(group =>
                     group.Members?.ForEach(m =>
@@ -75,7 +75,7 @@
         [NonAction]
         private async Task<HttpResponseMessage> Query(ScimQueryOptions options)
         {
-            return (await _GroupService.QueryGroups(options))
+            return (await _GroupService.QueryGroups(User, options))
                 .Let(groups => groups.ForEach(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id })))
                 .Let(groups => groups.ForEach(group =>
                 {
@@ -104,7 +104,7 @@
         {
             groupDto.Id = groupId;
 
-            return (await _GroupService.UpdateGroup(groupDto))
+            return (await _GroupService.UpdateGroup(User, groupDto))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id }))
                 .ToHttpResponseMessage(Request, (group, response) =>
                 {
@@ -116,7 +116,7 @@
         [Route("{groupId}")]
         public async Task<HttpResponseMessage> Delete(string groupId)
         {
-            return (await _GroupService.DeleteGroup(groupId))
+            return (await _GroupService.DeleteGroup(User, groupId))
                 .ToHttpResponseMessage(Request, HttpStatusCode.NoContent);
         }
     }

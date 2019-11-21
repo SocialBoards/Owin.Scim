@@ -47,7 +47,7 @@ namespace Owin.Scim.v2.Endpoints
         [Route]
         public async Task<HttpResponseMessage> Post(ScimUser userDto)
         {
-            return (await _UserService.CreateUser(userDto))
+            return (await _UserService.CreateUser(User, userDto))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .ToHttpResponseMessage(Request, (user, response) =>
                 {
@@ -61,7 +61,7 @@ namespace Owin.Scim.v2.Endpoints
         [Route("{userId}", Name = RetrieveUserRouteName)]
         public async Task<HttpResponseMessage> Get(string userId)
         {
-            return (await _UserService.RetrieveUser(userId))
+            return (await _UserService.RetrieveUser(User, userId))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .Let(PopulateUserGroupRef)
                 .ToHttpResponseMessage(Request, (user, response) =>
@@ -88,7 +88,7 @@ namespace Owin.Scim.v2.Endpoints
         [NonAction]
         private async Task<HttpResponseMessage> Query(ScimQueryOptions options)
         {
-            return (await _UserService.QueryUsers(options))
+            return (await _UserService.QueryUsers(User, options))
                 .Let(users => users.ForEach(user => SetMetaLocation(user, RetrieveUserRouteName, new {userId = user.Id})))
                 .Let(users => users.ForEach(PopulateUserGroupRef))
                 .Bind(
@@ -117,7 +117,7 @@ namespace Owin.Scim.v2.Endpoints
                     .ToHttpResponseMessage(Request);
             }
 
-            return (await (await _UserService.RetrieveUser(userId))
+            return (await (await _UserService.RetrieveUser(User, userId))
                 .Bind(user =>
                 {
                     try
@@ -134,7 +134,7 @@ namespace Owin.Scim.v2.Endpoints
                         return (IScimResponse<ScimUser>)new ScimErrorResponse<ScimUser>(ex.ToScimError());
                     }
                 })
-                .BindAsync(user => _UserService.UpdateUser(user)))
+                .BindAsync(user => _UserService.UpdateUser(User, user)))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .Let(PopulateUserGroupRef)
                 .ToHttpResponseMessage(Request, (user, response) =>
@@ -150,7 +150,7 @@ namespace Owin.Scim.v2.Endpoints
         {
             userDto.Id = userId;
 
-            return (await _UserService.UpdateUser(userDto))
+            return (await _UserService.UpdateUser(User, userDto))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .Let(PopulateUserGroupRef)
                 .ToHttpResponseMessage(Request, (user, response) =>
@@ -163,7 +163,7 @@ namespace Owin.Scim.v2.Endpoints
         [Route("{userId}")]
         public async Task<HttpResponseMessage> Delete(string userId)
         {
-            return (await _UserService.DeleteUser(userId))
+            return (await _UserService.DeleteUser(User, userId))
                 .ToHttpResponseMessage(Request, HttpStatusCode.NoContent);
         }
 

@@ -59,7 +59,7 @@ namespace DryIoc.Owin
                     if (registerInScope != null)
                         registerInScope(scope);
                     context.Set(ScopedContainerKeyInContext, scope);
-                    await next();
+                    await next().ConfigureAwait(false);
                 }
             });
 

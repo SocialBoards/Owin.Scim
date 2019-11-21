@@ -40,7 +40,7 @@
         [Route]
         public async Task<HttpResponseMessage> Post(ScimUser1 userDto)
         {
-            return (await _UserService.CreateUser(userDto))
+            return (await _UserService.CreateUser(User, userDto))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .ToHttpResponseMessage(Request, (user, response) =>
                 {
@@ -54,7 +54,7 @@
         [Route("{userId}", Name = RetrieveUserRouteName)]
         public async Task<HttpResponseMessage> Get(string userId)
         {
-            return (await _UserService.RetrieveUser(userId))
+            return (await _UserService.RetrieveUser(User, userId))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .ToHttpResponseMessage(Request, (user, response) =>
                 {
@@ -78,7 +78,7 @@
         [NonAction]
         private async Task<HttpResponseMessage> Query(ScimQueryOptions options)
         {
-            return (await _UserService.QueryUsers(options))
+            return (await _UserService.QueryUsers(User, options))
                 .Let(users => users.ForEach(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id })))
                 .Let(users => users.ForEach(user =>
                 {
@@ -104,7 +104,7 @@
         {
             userDto.Id = userId;
 
-            return (await _UserService.UpdateUser(userDto))
+            return (await _UserService.UpdateUser(User, userDto))
                 .Let(user => SetMetaLocation(user, RetrieveUserRouteName, new { userId = user.Id }))
                 .ToHttpResponseMessage(Request, (user, response) =>
                 {
@@ -116,7 +116,7 @@
         [Route("{userId}")]
         public async Task<HttpResponseMessage> Delete(string userId)
         {
-            return (await _UserService.DeleteUser(userId))
+            return (await _UserService.DeleteUser(User, userId))
                 .ToHttpResponseMessage(Request, HttpStatusCode.NoContent);
         }
     }

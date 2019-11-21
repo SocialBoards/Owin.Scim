@@ -1,4 +1,6 @@
-﻿namespace Owin.Scim.Repository
+﻿using System.Security.Principal;
+
+namespace Owin.Scim.Repository
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -15,21 +17,21 @@
         /// </summary>
         /// <param name="group">The group.</param>
         /// <returns>Task&lt;ScimGroup&gt;.</returns>
-        Task<ScimGroup> CreateGroup(ScimGroup group);
+        Task<ScimGroup> CreateGroup(IPrincipal principal, ScimGroup group);
 
         /// <summary>
         /// Gets the <see cref="ScimGroup"/> resource associated with the specified <paramref name="groupId"/>.
         /// </summary>
         /// <param name="groupId">The group identifier.</param>
         /// <returns>Task&lt;ScimGroup&gt;.</returns>
-        Task<ScimGroup> GetGroup(string groupId);
+        Task<ScimGroup> GetGroup(IPrincipal principal, string groupId);
 
         /// <summary>
         /// Updates the specified <paramref name="group"/> record.
         /// </summary>
         /// <param name="group">The group.</param>
         /// <returns>Task&lt;ScimGroup&gt;.</returns>
-        Task<ScimGroup> UpdateGroup(ScimGroup group);
+        Task<ScimGroup> UpdateGroup(IPrincipal principal, ScimGroup group);
 
         /// <summary>
         /// Deletes the <see cref="ScimGroup"/> resource associated with the specified <paramref name="groupId"/>. 
@@ -46,27 +48,27 @@
         /// </summary>
         /// <param name="groupId">The group identifier.</param>
         /// <returns>Task.</returns>
-        Task DeleteGroup(string groupId);
+        Task DeleteGroup(IPrincipal principal, string groupId);
 
         /// <summary>
         /// Searches for groups whose metadata satisfy the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Task&lt;IEnumerable&lt;ScimGroup&gt;&gt;.</returns>
-        Task<IEnumerable<ScimGroup>> QueryGroups(ScimQueryOptions options);
+        Task<IEnumerable<ScimGroup>> QueryGroups(IPrincipal principal, ScimQueryOptions options);
 
         /// <summary>
         /// Gets the groups the specified <paramref name="userId"/> belongs to.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>Task&lt;IEnumerable&lt;UserGroup&gt;&gt;.</returns>
-        Task<IEnumerable<UserGroup>> GetGroupsUserBelongsTo(string userId);
+        Task<IEnumerable<UserGroup>> GetGroupsUserBelongsTo(IPrincipal principal, string userId);
 
         /// <summary>
         /// Determines whether a group with the specified <paramref name="groupId"/> exists.
         /// </summary>
         /// <param name="groupId">The group identifier.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
-        Task<bool> GroupExists(string groupId);
+        Task<bool> GroupExists(IPrincipal principal, string groupId);
     }
 }

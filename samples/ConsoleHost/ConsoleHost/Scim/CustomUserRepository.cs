@@ -1,4 +1,6 @@
-﻿namespace ConsoleHost.Scim
+﻿using System.Security.Principal;
+
+namespace ConsoleHost.Scim
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -41,7 +43,7 @@
             _UserManager = userManager;
         }
 
-        public async Task<ScimUser> CreateUser(ScimUser user)
+        public async Task<ScimUser> CreateUser(IPrincipal principal, ScimUser user)
         {
             var kernelUser = _Mapper.Map<KernelUser>(user);
             var userRecord = await _UserManager.CreateUser(kernelUser);
@@ -52,7 +54,7 @@
             return _Mapper.Map<ScimUser2>(userRecord);
         }
 
-        public async Task<ScimUser> GetUser(string userId)
+        public async Task<ScimUser> GetUser(IPrincipal principal, string userId)
         {
             var userRecord = await _UserManager.GetUser(userId);
             if (userRecord == null)
@@ -63,18 +65,18 @@
             return _Mapper.Map<ScimUser2>(userRecord);
         }
 
-        public async Task<ScimUser> UpdateUser(ScimUser user)
+        public async Task<ScimUser> UpdateUser(IPrincipal principal, ScimUser user)
         {
             var kernelUser = _Mapper.Map<KernelUser>(user);
             return _Mapper.Map<ScimUser2>(await _UserManager.UpdateUser(kernelUser));
         }
 
-        public async Task DeleteUser(string userId)
+        public async Task DeleteUser(IPrincipal principal, string userId)
         {
             await _UserManager.DeleteUser(userId);
         }
 
-        public async Task<IEnumerable<ScimUser>> QueryUsers(ScimQueryOptions options)
+        public async Task<IEnumerable<ScimUser>> QueryUsers(IPrincipal principal, ScimQueryOptions options)
         {
             var users = _Mapper.Map<IEnumerable<ScimUser2>>(await _UserManager.GetUsers());
             var filtered = users.Where(options.Filter.ToPredicate<ScimUser2>(_scimServerConfiguration)).ToList();
@@ -82,12 +84,12 @@
             return filtered;
         }
 
-        public Task<bool> IsUserNameAvailable(string userName)
+        public Task<bool> IsUserNameAvailable(IPrincipal principal, string userName)
         {
             return Task.FromResult(true);
         }
 
-        public async Task<bool> UserExists(string userId)
+        public async Task<bool> UserExists(IPrincipal principal, string userId)
         {
             return await _UserManager.GetUser(userId) != null;
         }

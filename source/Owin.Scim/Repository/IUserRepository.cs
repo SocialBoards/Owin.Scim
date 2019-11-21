@@ -1,4 +1,6 @@
-﻿namespace Owin.Scim.Repository
+﻿using System.Security.Principal;
+
+namespace Owin.Scim.Repository
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -14,21 +16,21 @@
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<ScimUser> CreateUser(ScimUser user);
+        Task<ScimUser> CreateUser(IPrincipal principal, ScimUser user);
 
         /// <summary>
         /// Gets the <see cref="ScimUser"/> resource associated with the specified <paramref name="userId"/>.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<ScimUser> GetUser(string userId);
+        Task<ScimUser> GetUser(IPrincipal principal, string userId);
 
         /// <summary>
         /// Updates the specified <paramref name="user"/> record.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<ScimUser> UpdateUser(ScimUser user);
+        Task<ScimUser> UpdateUser(IPrincipal principal, ScimUser user);
 
         /// <summary>
         /// Deletes the <see cref="ScimUser"/> resource associated with the specified <paramref name="userId"/>.
@@ -45,27 +47,27 @@
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task DeleteUser(string userId);
+        Task DeleteUser(IPrincipal principal, string userId);
 
         /// <summary>
         /// Searches for users whose metadata satisfy the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        Task<IEnumerable<ScimUser>> QueryUsers(ScimQueryOptions options);
+        Task<IEnumerable<ScimUser>> QueryUsers(IPrincipal principal, ScimQueryOptions options);
 
         /// <summary>
         /// Returns whether the specified <paramref name="userName"/> is available or already in use.
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        Task<bool> IsUserNameAvailable(string userName);
+        Task<bool> IsUserNameAvailable(IPrincipal principal, string userName);
         
         /// <summary>
         /// Determines whether a user with the specified <paramref name="userId"/> exists.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
-        Task<bool> UserExists(string userId);
+        Task<bool> UserExists(IPrincipal principal, string userId);
     }
 }

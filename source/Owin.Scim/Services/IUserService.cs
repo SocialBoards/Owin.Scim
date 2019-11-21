@@ -1,4 +1,6 @@
-﻿namespace Owin.Scim.Services
+﻿using System.Security.Principal;
+
+namespace Owin.Scim.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -11,14 +13,14 @@
 
     public interface IUserService
     {
-        Task<IScimResponse<ScimUser>> CreateUser(ScimUser user);
+        Task<IScimResponse<ScimUser>> CreateUser(IPrincipal principal, ScimUser user);
 
-        Task<IScimResponse<ScimUser>> RetrieveUser(string userId);
+        Task<IScimResponse<ScimUser>> RetrieveUser(IPrincipal principal, string userId);
 
-        Task<IScimResponse<ScimUser>> UpdateUser(ScimUser user);
+        Task<IScimResponse<ScimUser>> UpdateUser(IPrincipal principal, ScimUser user);
 
-        Task<IScimResponse<Unit>> DeleteUser(string userId);
+        Task<IScimResponse<Unit>> DeleteUser(IPrincipal principal, string userId);
 
-        Task<IScimResponse<IEnumerable<ScimUser>>> QueryUsers(ScimQueryOptions options);
+        Task<IScimResponse<IEnumerable<ScimUser>>> QueryUsers(IPrincipal principal, ScimQueryOptions options);
     }
 }

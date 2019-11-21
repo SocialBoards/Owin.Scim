@@ -32,7 +32,7 @@
 
             return ruleBuilder.MustAsync(
                 async (val, token) => 
-                await Task.FromResult(comparer.Equals(val, toCompare())));
+                await Task.FromResult(comparer.Equals(val, toCompare())).ConfigureAwait(false));
         }
 
         public static IRuleBuilderOptions<T, TProperty> Immutable<T, TProperty>(
@@ -47,7 +47,7 @@
 
             return ruleBuilder.MustAsync(
                 async (entity, val, token) => 
-                await Task.FromResult(comparer.Equals(val, toCompare(entity))));
+                await Task.FromResult(comparer.Equals(val, toCompare(entity))).ConfigureAwait(false));
         }
 
         public static IRuleBuilderOptions<T, TProperty> ImmutableAsync<T, TProperty>(
@@ -63,8 +63,8 @@
             return ruleBuilder.MustAsync(
                 async (val, token) =>
                 {
-                    var compareValue = await toCompare();
-                    return await Task.FromResult(comparer.Equals(val, compareValue));
+                    var compareValue = await toCompare().ConfigureAwait(false);
+                    return await Task.FromResult(comparer.Equals(val, compareValue)).ConfigureAwait(false);
                 });
         }
 
@@ -81,8 +81,8 @@
             return ruleBuilder.MustAsync(
                 async (entity, val, token) =>
                 {
-                    var compareValue = await toCompare(entity);
-                    return await Task.FromResult(comparer.Equals(val, compareValue));
+                    var compareValue = await toCompare(entity).ConfigureAwait(false);
+                    return await Task.FromResult(comparer.Equals(val, compareValue)).ConfigureAwait(false);
                 });
         }
         

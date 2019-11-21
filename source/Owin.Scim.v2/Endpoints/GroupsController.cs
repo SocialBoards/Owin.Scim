@@ -43,7 +43,7 @@
         [Route]
         public async Task<HttpResponseMessage> Post(ScimGroup groupDto)
         {
-            return (await _GroupService.CreateGroup(groupDto))
+            return (await _GroupService.CreateGroup(User, groupDto))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id }))
                 .Let(PopulateMemberRef)
                 .ToHttpResponseMessage(Request, (group, response) =>
@@ -58,7 +58,7 @@
         [Route("{groupId}", Name = RetrieveGroupRouteName)]
         public async Task<HttpResponseMessage> Get(string groupId)
         {
-            return (await _GroupService.RetrieveGroup(groupId))
+            return (await _GroupService.RetrieveGroup(User, groupId))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new {groupId = group.Id}))
                 .Let(PopulateMemberRef)
                 .ToHttpResponseMessage(Request, (group, response) =>
@@ -85,7 +85,7 @@
         [NonAction]
         private async Task<HttpResponseMessage> Query(ScimQueryOptions options)
         {
-            return (await _GroupService.QueryGroups(options))
+            return (await _GroupService.QueryGroups(User, options))
                 .Let(groups => groups.ForEach(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id })))
                 .Let(groups => groups.ForEach(PopulateMemberRef))
                 .Bind(
@@ -114,7 +114,7 @@
                     .ToHttpResponseMessage(Request);
             }
 
-            return (await (await _GroupService.RetrieveGroup(groupId))
+            return (await (await _GroupService.RetrieveGroup(User, groupId))
                 .Bind(group =>
                 {
                     try
@@ -131,7 +131,7 @@
                         return (IScimResponse<ScimGroup>)new ScimErrorResponse<ScimGroup>(ex.ToScimError());
                     }
                 })
-                .BindAsync(group => _GroupService.UpdateGroup(group)))
+                .BindAsync(group => _GroupService.UpdateGroup(User, group)))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id }))
                 .Let(PopulateMemberRef)
                 .ToHttpResponseMessage(Request, (group, response) =>
@@ -147,7 +147,7 @@
         {
             groupDto.Id = groupId;
 
-            return (await _GroupService.UpdateGroup(groupDto))
+            return (await _GroupService.UpdateGroup(User, groupDto))
                 .Let(group => SetMetaLocation(group, RetrieveGroupRouteName, new { groupId = group.Id }))
                 .Let(PopulateMemberRef)
                 .ToHttpResponseMessage(Request, (group, response) =>
@@ -160,7 +160,7 @@
         [Route("{groupId}")]
         public async Task<HttpResponseMessage> Delete(string groupId)
         {
-            return (await _GroupService.DeleteGroup(groupId))
+            return (await _GroupService.DeleteGroup(User, groupId))
                 .ToHttpResponseMessage(Request, HttpStatusCode.NoContent);
         }
 

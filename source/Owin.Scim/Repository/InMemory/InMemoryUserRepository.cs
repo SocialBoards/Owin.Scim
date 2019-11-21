@@ -1,18 +1,22 @@
 ﻿namespace Owin.Scim.Repository.InMemory
 {
     using System;
+
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Security.Principal;
 
     using Extensions;
 
     using Model.Users;
 
     using NContext.Security.Cryptography;
+
     using Owin.Scim.Configuration;
+
     using Querying;
 
     public class InMemoryUserRepository : IUserRepository
@@ -30,7 +34,7 @@
             _scimServerConfiguration = scimServerConfiguration;
         }
 
-        public async Task<ScimUser> CreateUser(ScimUser user)
+        public async Task<ScimUser> CreateUser(IPrincipal principal, ScimUser user)
         {
             user.Id = Guid.NewGuid().ToString("N");
 
@@ -43,7 +47,7 @@
             return user;
         }
 
-        public async Task<ScimUser> GetUser(string userId)
+        public async Task<ScimUser> GetUser(IPrincipal principal, string userId)
         {
             // return a deep-clone of the user object
             // since this is in-memory, we don't want any HTTP PATCH or other code to actually modify the
@@ -53,12 +57,12 @@
                 : _Users[userId].Copy();
 
             if (user != null)
-                user.Groups = await _GroupRepository.GetGroupsUserBelongsTo(userId);
+                user.Groups = await _GroupRepository.GetGroupsUserBelongsTo(userId).ConfigureAwait(false);
 
             return user;
         }
 
-        public async Task<ScimUser> UpdateUser(ScimUser user)
+        public async Task<ScimUser> UpdateUser(IPrincipal principal, ScimUser user)
         {
             if (!_Users.ContainsKey(user.Id))
                 return user;
@@ -69,7 +73,7 @@
             return user;
         }
 
-        public async Task DeleteUser(string userId)
+        public async Task DeleteUser(IPrincipal principal, string userId)
         {
             if (!_Users.ContainsKey(userId)) return;
 
@@ -77,7 +81,7 @@
             _Users.TryRemove(userId, out userRecord);
         }
 
-        public async Task<IEnumerable<ScimUser>> QueryUsers(ScimQueryOptions options)
+        public async Task<IEnumerable<ScimUser>> QueryUsers(IPrincipal principal, ScimQueryOptions options)
         {
             var users = _Users.Values.AsEnumerable();
             if (options.Filter != null)
@@ -97,7 +101,7 @@
             return users;
         }
 
-        public Task<bool> IsUserNameAvailable(string userName)
+        public Task<bool> IsUserNameAvailable(IPrincipal principal, string userName)
         {
             /* Before comparing or evaluating the uniqueness of a "userName" or 
                "password" attribute, service providers MUST use the preparation, 
@@ -114,7 +118,7 @@
                     .All(u => !CryptographyUtility.CompareBytes(Encoding.UTF8.GetBytes(u.UserName), userNameBytes)));
         }
 
-        public Task<bool> UserExists(string userId)
+        public Task<bool> UserExists(IPrincipal principal, string userId)
         {
             return Task.FromResult(_Users.ContainsKey(userId));
         }

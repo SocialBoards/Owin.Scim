@@ -45,7 +45,7 @@
         {
             try
             {
-                await Next.Invoke(context);
+                await Next.Invoke(context).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

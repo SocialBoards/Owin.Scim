@@ -1,4 +1,6 @@
-﻿namespace Owin.Scim.Tests.Services.UserService.Update
+﻿using System.Security.Principal;
+
+namespace Owin.Scim.Tests.Services.UserService.Update
 {
     using System.Threading.Tasks;
 
@@ -21,15 +23,16 @@
 
     public class when_updating_a_user
     {
-        Establish context = () =>
+        private Establish context = () =>
         {
             ServerConfiguration = new ScimServerConfiguration();
             UserRepository = A.Fake<IUserRepository>();
             GroupRepository = A.Fake<IGroupRepository>();
             PasswordManager = A.Fake<IManagePasswords>();
-            
-            A.CallTo(() => UserRepository.UpdateUser(A<ScimUser>._))
-                .ReturnsLazily(c => Task.FromResult((ScimUser)c.Arguments[0]));
+            Principal  = A.Fake<IPrincipal>();
+
+            A.CallTo(() => UserRepository.UpdateUser(A<IPrincipal>._, A<ScimUser>._))
+                .ReturnsLazily(c => Task.FromResult((ScimUser) c.Arguments[0]));
 
             var etagProvider = A.Fake<IResourceVersionProvider>();
             var canonicalizationService = A.Fake<DefaultCanonicalizationService>(o => o.CallsBaseMethods());
@@ -42,7 +45,9 @@
                 PasswordManager);
         };
 
-        Because of = async () => Result = await _UserService.UpdateUser(ClientUserDto).AwaitResponse().AsTask;
+        public static IPrincipal Principal { get; set; }
+
+        Because of = async () => Result = await _UserService.UpdateUser(Principal, ClientUserDto).AwaitResponse().AsTask;
 
         protected static ScimUser ClientUserDto;
 
